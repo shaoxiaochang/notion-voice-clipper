@@ -5,11 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const review = document.getElementById("review");
   const status = document.getElementById("status");
   let format;
+  let endpoint;
+  let notionSecret;
+  let notionPageId;
   let audioURL;
   let encoding = false;
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "createTab") {
       format = request.format;
+      notionSecret = request.notionSecret;
+      notionPageId = request.notionPageId;
+      endpoint = request.endpoint;
       let startID = request.startID;
       status.innerHTML = "Please wait...";
       closeButton.onclick = () => {
@@ -44,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
       //creates the save button
       const currentDate = new Date(Date.now()).toDateString();
       saveButton.onclick = () => {
-        const apiEndpoint = "https://intelligence-tune-contributor-comm.trycloudflare.com/upload";
         fetch(url)
           .then((response) => response.blob())
           .then((blob) => {
@@ -53,16 +58,27 @@ document.addEventListener("DOMContentLoaded", () => {
             formData.append("file", blob, "audio.mp3");
 
             // Send HTTP request using fetch
-            return fetch(apiEndpoint, {
+            return fetch(`${endpoint}/upload`, {
               method: "POST",
               body: formData,
             });
           })
           .then((response) => response.json())
           .then((data) => {
-            console.log(data);
             const resultDiv = document.getElementById("result");
             resultDiv.append(data.filename);
+
+            fetch(`${endpoint}/uploadToNotion`, {
+              method: "POST",
+              headers: new Headers({
+                "Content-Type": "application/json",
+              }),
+              body: JSON.stringify({
+                pageId: notionPageId,
+                content: data.filename,
+                secret: notionSecret,
+              }),
+            });
           })
           .catch((error) => {
             console.error(error);

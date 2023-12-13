@@ -87,3 +87,9 @@ li {
   font-size: 12px;
   white-space: pre;
 }
+
+.endpointContainer {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+}
