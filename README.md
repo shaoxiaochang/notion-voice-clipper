@@ -22,7 +22,7 @@ https://github.com/shaoxiaochang/notion-voice-clipper
 
 3. 選取Notion Voice Clipper這個資料夾
 
-### 3. 運行測試
+## 運行測試
 1. 打開notion voice clipper這個extension
 
 2. 點options
